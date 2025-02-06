@@ -50,7 +50,7 @@ or
 Kill Temp All allows the user to select with checkboxes which files, folders or paths to search on the computer
 and remove Adobe cache files there.
 
-Kill Temp All also allows easy changing between languages via a dropbox, where language packs will be loaded
+Kill Temp All also allows easy changing between languages via a drop-down menu, where language packs will be loaded
 and shown for the user to choose. As of 06/02/2025, these are the language packs:
 
 - English
