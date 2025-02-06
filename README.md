@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="100" alt="resized_logo" src="https://github.com/user-attachments/assets/46ab9f47-3b78-4133-9eb4-3057b450ec6c" />
+  <img src="https://github.com/user-attachments/assets/ad14de91-cf3b-416b-8f43-56817634be43" style="width: 200px;" alt="resized_logo" />
 </p>
 
 <h1 align="center">Kill Temp All</h1>
