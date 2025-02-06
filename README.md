@@ -16,12 +16,15 @@
 </p>
 
 ## Introduction
+
 Tired of Adobe programs (InDesign, Photoshop, After Effects) generating temporary files all over your system? This Python program with a Tkinter GUI will solve that problem and 
 free many GiB of space on your computer.
 
 ## Installation on Windows
+
 There is currently no executable made for Windows. The only way of running the program (for now) is to build from source.
 ### Building from source (Windows only)
+
 Currently, all libraries come installed with Python itself. (Tkinter, os, shutil...). I have used Python 3.13.1 to make this program.
 
 `python --version`
@@ -38,17 +41,21 @@ or
 `python3 main.py`.
 
 ## Documentation
+
 ### Features
+
 Kill Temp All allows the user to select with checkboxes which files, folders or paths to search on the computer
 and remove Adobe cache files there.
 
 Kill Temp All also allows easy changing between languages via a dropbox, where language packs will be loaded
 and shown for the user to choose. As of 06/02/2025, these are the language packs:
+
 - English
 - Spanish
 
 All language packs are located inside the *Languages/* folder, and each of them is a JSON file (*.json*)
-Translators for other languages would be really appreciated.
+
+**Translators for other languages would be really appreciated.**
 
 Last but not least, Kill Temp All saves the configuration of different parameters in *settings.ini*. 
 Those parameters are:
