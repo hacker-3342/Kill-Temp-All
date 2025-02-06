@@ -22,7 +22,10 @@ free many GiB of space on your computer.
 
 ## Installation on Windows
 
-There is currently no executable made for Windows. The only way of running the program (for now) is to build from source.
+Click on the *releases* tab on the GitHub page and download the latest one.
+
+Place the files & folders wherever you want.
+
 ### Building from source (Windows only)
 
 Currently, all libraries come installed with Python itself. (Tkinter, os, shutil...). I have used Python 3.13.1 to make this program.
@@ -64,5 +67,8 @@ Those parameters are:
 
 ## Error reporting
 If you encounter an error on the program, it would be greatly appreciated for you to write a bug report here: [Repository's Issue Page](https://github.com/hacker-3342/Kill-Temp-All/issues).
+
+Before writing a bug report, make sure you're on the newest version.
+
 ## Recommendations
 If you have a recommendation to make the application better, I encourage you to write an email to <hectoruru@outlook.es>. Thank You!
