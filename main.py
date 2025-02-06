@@ -3,6 +3,9 @@ from tkinter import ttk
 import os
 import shutil
 import threading
+import configparser
+import json
+import glob
 
 class TempFileDeleter:
     def __init__(self, window):
@@ -10,34 +13,45 @@ class TempFileDeleter:
         self.username = os.environ.get("USERNAME")
         self.files_deleted = 0
         self.folders_deleted = 0
+        self.config = configparser.ConfigParser()
+        self.config_file = 'settings.ini'
+        self.load_language()
         self.setup_ui()
+        self.load_checkbox_states()
         self.toggle_checkboxes()
+
+    def load_language(self):
+        self.config.read(self.config_file)
+        language = self.config.get('Settings', 'language', fallback='english')
+        with open(f'Languages/{language}.json', 'r') as f:
+            self.lang = json.load(f)
 
     def setup_ui(self):
         self.window.geometry("850x500")
-        name = tk.Label(self.window, text="Kill Temp All", font=("Helvetica", 20))
+        name = tk.Label(self.window, text=self.lang["title"], font=("Helvetica", 20))
         name.pack(padx=10, pady=1)
-        desc = tk.Label(self.window, text="A simple program to delete all Adobe temporary files", font=("Helvetica", 10))
+        desc = tk.Label(self.window, text=self.lang["description"], font=("Helvetica", 10))
         desc.pack(padx=10, pady=1)
         self.create_checkboxes()
         self.create_buttons()
         self.create_advisory_label()
+        self.create_language_dropdown()
 
     def create_checkboxes(self):
         self.checkbox_frame = tk.Frame(self.window)
         self.checkbox_frame.pack(padx=10, pady=10)
         self.path_vars = []
 
-        self.d_drive_var, self.d_drive_checkbox = self.create_checkbox(self.checkbox_frame, "D:/", padx=10)
-        self.d_ame_var, self.d_ame_checkbox = self.create_checkbox(self.checkbox_frame, "_AME folders", padx=30)
-        self.d_extensions_var, self.d_extensions_checkbox = self.create_checkbox(self.checkbox_frame, ".mpgindex, .ims, .cfa, .pek file extensions", padx=30)
+        self.d_drive_var, self.d_drive_checkbox = self.create_checkbox(self.checkbox_frame, self.lang["d_drive"], padx=10)
+        self.d_ame_var, self.d_ame_checkbox = self.create_checkbox(self.checkbox_frame, self.lang["d_ame"], padx=30)
+        self.d_extensions_var, self.d_extensions_checkbox = self.create_checkbox(self.checkbox_frame, self.lang["d_extensions"], padx=30)
 
-        self.c_drive_var, self.c_drive_checkbox = self.create_checkbox(self.checkbox_frame, "C:/", padx=10)
-        self.c_ame_var, self.c_ame_checkbox = self.create_checkbox(self.checkbox_frame, "_AME folders", padx=30)
-        self.c_extensions_var, self.c_extensions_checkbox = self.create_checkbox(self.checkbox_frame, ".mpgindex, .ims, .cfa, .pek file extensions", padx=30)
+        self.c_drive_var, self.c_drive_checkbox = self.create_checkbox(self.checkbox_frame, self.lang["c_drive"], padx=10)
+        self.c_ame_var, self.c_ame_checkbox = self.create_checkbox(self.checkbox_frame, self.lang["c_ame"], padx=30)
+        self.c_extensions_var, self.c_extensions_checkbox = self.create_checkbox(self.checkbox_frame, self.lang["c_extensions"], padx=30)
 
-        self.e_drive_var = self.create_checkbox(self.checkbox_frame, "E:/", padx=10)[0]
-        self.adobe_cache_var = self.create_checkbox(self.checkbox_frame, f"C:/Users/{self.username}/AppData/Roaming/Adobe/common/Media Cache Files", padx=10)[0]
+        self.e_drive_var = self.create_checkbox(self.checkbox_frame, self.lang["e_drive"], padx=10)[0]
+        self.adobe_cache_var = self.create_checkbox(self.checkbox_frame, self.lang["adobe_cache"].format(username=self.username), padx=10)[0]
 
         self.d_drive_var.trace_add('write', lambda *args: self.toggle_suboptions(self.d_drive_var, [(self.d_ame_var, self.d_ame_checkbox), (self.d_extensions_var, self.d_extensions_checkbox)]))
         self.c_drive_var.trace_add('write', lambda *args: self.toggle_suboptions(self.c_drive_var, [(self.c_ame_var, self.c_ame_checkbox), (self.c_extensions_var, self.c_extensions_checkbox)]))
@@ -45,13 +59,13 @@ class TempFileDeleter:
     def create_buttons(self):
         self.btn_frame = tk.Frame(self.window)
         self.btn_frame.pack(padx=10, pady=10)
-        self.btn = tk.Button(self.btn_frame, text="Delete temporary files", command=lambda: self.start_deletion(shutdown=False))
+        self.btn = tk.Button(self.btn_frame, text=self.lang["delete_files"], command=lambda: self.start_deletion(shutdown=False))
         self.btn.pack(side=tk.LEFT, padx=5)
-        self.btn2 = tk.Button(self.btn_frame, text="Delete temporary files & shut down the computer", command=lambda: self.start_deletion(shutdown=True))
+        self.btn2 = tk.Button(self.btn_frame, text=self.lang["delete_files_shutdown"], command=lambda: self.start_deletion(shutdown=True))
         self.btn2.pack(side=tk.LEFT, padx=5)
 
     def create_advisory_label(self):
-        advisory = tk.Label(self.window, text="Select the paths you want to delete. Be careful, some folders may be used by Adobe, and you might not want to delete certain files/folders.", font=("Helvetica", 10))
+        advisory = tk.Label(self.window, text=self.lang["advisory"], font=("Helvetica", 10))
         advisory.pack(padx=10, pady=1)
 
     def create_checkbox(self, parent, text, padx=20):
@@ -67,6 +81,7 @@ class TempFileDeleter:
             var[1].config(state=state)
 
     def start_deletion(self, shutdown=False):
+        self.save_checkbox_states()
         self.btn.config(state=tk.DISABLED)
         self.btn2.config(state=tk.DISABLED)
         self.progress_bar = ttk.Progressbar(self.window, mode='indeterminate')
@@ -75,9 +90,9 @@ class TempFileDeleter:
         self.separator.pack(fill='x', padx=10, pady=10)
         labels_frame = tk.Frame(self.window)
         labels_frame.pack(padx=10, pady=1)
-        self.label_folders = tk.Label(labels_frame, text=f"Folders deleted: {self.folders_deleted}", bg="yellow")
+        self.label_folders = tk.Label(labels_frame, text=self.lang["folders_deleted"].format(count=self.folders_deleted), bg="yellow")
         self.label_folders.pack(side=tk.LEFT, padx=5)
-        self.label_files = tk.Label(labels_frame, text=f"Files deleted: {self.files_deleted}", bg="red")
+        self.label_files = tk.Label(labels_frame, text=self.lang["files_deleted"].format(count=self.files_deleted), bg="red")
         self.label_files.pack(side=tk.LEFT, padx=5)
         self.label_completed = tk.Label(labels_frame, text="")
         self.label_completed.pack(side=tk.LEFT, padx=5)
@@ -95,13 +110,13 @@ class TempFileDeleter:
         ]
         paths = [(path, condition) for path, condition, var in paths if var.get()]
         for path, condition in paths:
-            self.label_completed.config(text=f"Searching in {path}...", bg="orange")
+            self.label_completed.config(text=self.lang["searching_in"].format(path=path), bg="orange")
             self.delete_path(path, condition)
             self.window.update_idletasks()
         print("Files deleted")
         self.progress_bar.stop()
         self.progress_bar.config(value=100)
-        self.label_completed.config(text="Operation completed", bg="green", width=30)
+        self.label_completed.config(text=self.lang["operation_completed"], bg="green", width=30)
         if shutdown:
             print("Shutting down the computer...")
             os.system("shutdown /s /t 1")
@@ -113,14 +128,14 @@ class TempFileDeleter:
                     try:
                         os.remove(os.path.join(root, name))
                         self.files_deleted += 1
-                        self.label_files.config(text=f"Files deleted: {self.files_deleted}")
+                        self.label_files.config(text=self.lang["files_deleted"].format(count=self.files_deleted))
                     except PermissionError:
                         pass
                 for name in subdirs:
                     try:
                         shutil.rmtree(os.path.join(root, name))
                         self.folders_deleted += 1
-                        self.label_folders.config(text=f"Folders deleted: {self.folders_deleted}")
+                        self.label_folders.config(text=self.lang["folders_deleted"].format(count=self.folders_deleted))
                     except PermissionError:
                         pass
             elif isinstance(condition, str):
@@ -129,7 +144,7 @@ class TempFileDeleter:
                         try:
                             shutil.rmtree(os.path.join(root, name))
                             self.folders_deleted += 1
-                            self.label_folders.config(text=f"Folders deleted: {self.folders_deleted}")
+                            self.label_folders.config(text=self.lang["folders_deleted"].format(count=self.folders_deleted))
                         except PermissionError:
                             pass
             elif isinstance(condition, list):
@@ -138,7 +153,7 @@ class TempFileDeleter:
                         try:
                             os.remove(os.path.join(root, name))
                             self.files_deleted += 1
-                            self.label_files.config(text=f"Files deleted: {self.files_deleted}")
+                            self.label_files.config(text=self.lang["files_deleted"].format(count=self.files_deleted))
                         except PermissionError:
                             pass
 
@@ -147,6 +162,32 @@ class TempFileDeleter:
         self.d_drive_var.set(False)
         self.c_drive_var.set(True)
         self.c_drive_var.set(False)
+
+    def save_checkbox_states(self):
+        self.config['Checkboxes'] = {f'var{i}': str(var.get()) for i, var in enumerate(self.path_vars)}
+        with open(self.config_file, 'w') as configfile:
+            self.config.write(configfile)
+
+    def load_checkbox_states(self):
+        if os.path.exists(self.config_file):
+            self.config.read(self.config_file)
+            for i, var in enumerate(self.path_vars):
+                var.set(self.config.getboolean('Checkboxes', f'var{i}', fallback=False))
+
+    def create_language_dropdown(self):
+        languages = [os.path.basename(f).split('.')[0] for f in glob.glob('Languages/*.json')]
+        self.language_var = tk.StringVar(value=self.config.get('Settings', 'language', fallback='english'))
+        dropdown = ttk.Combobox(self.window, textvariable=self.language_var, values=languages)
+        dropdown.pack(side=tk.LEFT, padx=10, pady=10)
+        dropdown.bind("<<ComboboxSelected>>", self.change_language)
+
+    def change_language(self, event):
+        self.config['Settings'] = {'language': self.language_var.get()}
+        with open(self.config_file, 'w') as configfile:
+            self.config.write(configfile)
+        self.load_language()
+        self.window.destroy()
+        self.__init__(tk.Tk())
 
 if __name__ == "__main__":
     window = tk.Tk()

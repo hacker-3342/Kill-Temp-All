@@ -1,0 +1,19 @@
+{
+    "title": "Kill Temp All",
+    "description": "Un simple programa para eliminar todos los archivos temporales de Adobe",
+    "d_drive": "D:/",
+    "d_ame": "Carpetas '_AME'",
+    "d_extensions": ".extensiones de archivo .mpgindex, .ims, .cfa, .pek",
+    "c_drive": "C:/",
+    "c_ame": "Carpetas '_AME'",
+    "c_extensions": ".extensiones de archivo .mpgindex, .ims, .cfa, .pek",
+    "e_drive": "E:/",
+    "adobe_cache": "C:/Users/{username}/AppData/Roaming/Adobe/common/Media Cache Files",
+    "delete_files": "Eliminar archivos temporales",
+    "delete_files_shutdown": "Eliminar archivos temporales & apagar el equipo",
+    "advisory": "Seleccione las rutas que desea eliminar. Tenga cuidado, algunas carpetas pueden ser utilizadas por Adobe, y es posible que no desee eliminar ciertos archivos/carpetas.",
+    "folders_deleted": "Carpetas eliminadas: {count}",
+    "files_deleted": "Archivos eliminados: {count}",
+    "searching_in": "Buscando en {path}...",
+    "operation_completed": "Operación completada"
+}

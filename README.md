@@ -37,6 +37,24 @@ Next, do:
 or
 `python3 main.py`.
 
+## Documentation
+### Features
+Kill Temp All allows the user to select with checkboxes which files, folders or paths to search on the computer
+and remove Adobe cache files there.
+
+Kill Temp All also allows easy changing between languages via a dropbox, where language packs will be loaded
+and shown for the user to choose. As of 06/02/2025, these are the language packs:
+- English
+- Spanish
+
+All language packs are located inside the *Languages/* folder, and each of them is a JSON file (*.json*)
+Translators for other languages would be really appreciated.
+
+Last but not least, Kill Temp All saves the configuration of different parameters in *settings.ini*. 
+Those parameters are:
+- Checkbox status (*var0, var1, etc.*)
+- Preferred language (defaults to English if the desired one isn't found).
+
 ## Error reporting
 If you encounter an error on the program, it would be greatly appreciated for you to write a bug report here: [Repository's Issue Page](https://github.com/hacker-3342/Kill-Temp-All/issues).
 ## Recommendations
