@@ -14,7 +14,7 @@ class TempFileDeleter:
         self.files_deleted = 0
         self.folders_deleted = 0
         self.config = configparser.ConfigParser()
-        self.config_file = 'settings.ini'
+        self.config_file = os.path.join(os.path.dirname(__file__), 'settings.ini')
         self.load_language()
         self.setup_ui()
         self.load_checkbox_states()
@@ -23,11 +23,13 @@ class TempFileDeleter:
     def load_language(self):
         self.config.read(self.config_file)
         language = self.config.get('Settings', 'language', fallback='english')
-        with open(f'Languages/{language}.json', 'r') as f:
+        language_file = os.path.join(os.path.dirname(__file__), 'Languages', f'{language}.json')
+        with open(language_file, 'r') as f:
             self.lang = json.load(f)
 
     def setup_ui(self):
-        self.window.geometry("850x500")
+        self.window.geometry("700x500")
+        self.create_sidebar()
         name = tk.Label(self.window, text=self.lang["title"], font=("Helvetica", 20))
         name.pack(padx=10, pady=1)
         desc = tk.Label(self.window, text=self.lang["description"], font=("Helvetica", 10))
@@ -35,7 +37,12 @@ class TempFileDeleter:
         self.create_checkboxes()
         self.create_buttons()
         self.create_advisory_label()
-        self.create_language_dropdown()
+
+    def create_sidebar(self):
+        self.sidebar_frame = tk.Frame(self.window)
+        self.sidebar_frame.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
+        self.create_language_dropdown(self.sidebar_frame)
+        self.create_save_button(self.sidebar_frame)
 
     def create_checkboxes(self):
         self.checkbox_frame = tk.Frame(self.window)
@@ -63,6 +70,17 @@ class TempFileDeleter:
         self.btn.pack(side=tk.LEFT, padx=5)
         self.btn2 = tk.Button(self.btn_frame, text=self.lang["delete_files_shutdown"], command=lambda: self.start_deletion(shutdown=True))
         self.btn2.pack(side=tk.LEFT, padx=5)
+
+    def create_save_button(self, parent):
+        self.save_btn = tk.Button(parent, text=self.lang["save_settings"], command=self.save_settings)
+        self.save_btn.pack(padx=10, pady=2)
+
+    def save_settings(self):
+        self.save_checkbox_states()
+        self.config['Settings'] = {'language': self.language_var.get()}
+        with open(self.config_file, 'w') as configfile:
+            self.config.write(configfile)
+        print("Settings saved")
 
     def create_advisory_label(self):
         advisory = tk.Label(self.window, text=self.lang["advisory"], font=("Helvetica", 10))
@@ -174,11 +192,12 @@ class TempFileDeleter:
             for i, var in enumerate(self.path_vars):
                 var.set(self.config.getboolean('Checkboxes', f'var{i}', fallback=False))
 
-    def create_language_dropdown(self):
-        languages = [os.path.basename(f).split('.')[0] for f in glob.glob('Languages/*.json')]
+    def create_language_dropdown(self, parent):
+        languages_dir = os.path.join(os.path.dirname(__file__), 'Languages')
+        languages = [os.path.basename(f).split('.')[0] for f in glob.glob(os.path.join(languages_dir, '*.json'))]
         self.language_var = tk.StringVar(value=self.config.get('Settings', 'language', fallback='english'))
-        dropdown = ttk.Combobox(self.window, textvariable=self.language_var, values=languages)
-        dropdown.pack(side=tk.LEFT, padx=10, pady=10)
+        dropdown = ttk.Combobox(parent, textvariable=self.language_var, values=languages)
+        dropdown.pack(padx=10, pady=2)
         dropdown.bind("<<ComboboxSelected>>", self.change_language)
 
     def change_language(self, event):
