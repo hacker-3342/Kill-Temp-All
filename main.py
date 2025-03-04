@@ -7,6 +7,8 @@ import configparser
 import json
 import glob
 
+# This is a change
+
 class TempFileDeleter:
     def __init__(self, window):
         self.window = window
