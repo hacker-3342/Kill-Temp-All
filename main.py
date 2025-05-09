@@ -108,7 +108,7 @@ class TempFileDeleter(QMainWindow):
     def save_settings(self):
         self.config['Settings'] = {'language': self.language_combo.currentText()}
         with open(self.config_file, 'w') as configfile:
-            self.config.write(configfile())
+            self.config.write(configfile)
         QMessageBox.information(self, "Settings", "Settings saved!")
 
     def change_language(self):
@@ -122,7 +122,7 @@ class TempFileDeleter(QMainWindow):
         threading.Thread(target=self.delete_files, args=(shutdown,), daemon=True).start()
 
         def delete_files(self, shutdown=False):
-        # Simulate work (replace with your real deletion code later)
+        # Simulate work (replace with real deletion code later)
             import time
             for i in range(101):
                 time.sleep(0.02)
@@ -175,6 +175,37 @@ if __name__ == "__main__":
             background-color: #333;
             color: #e0e0e0;
             padding: 3px;
+        }
+               
+        QCheckBox {
+            background-color: transparent;
+            color: #e0e0e0;
+            padding: 3px;
+            spacing: 5px;
+        }
+        
+        QCheckBox::indicator {
+            width: 15px;
+            height: 15px;
+            border: 1px solid #555;
+            border-radius: 3px;
+            background-color: #333;
+        }
+        
+        QCheckBox::indicator:checked {
+            /* No background here! Let Qt draw the default checkmark */
+            border: 1px solid #555;
+            image: url(checkmark.svg);
+        }
+        
+        QCheckBox::indicator:unchecked {
+            /* Keep same background for consistency */
+            background-color: #333;
+            border: 1px solid #555;
+        }
+        
+        QCheckBox::indicator:hover {
+            border: 1px solid #888;
         }
     """
     app.setStyleSheet(dark_stylesheet)
