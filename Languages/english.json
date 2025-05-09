@@ -1,12 +1,12 @@
 {
     "title": "Kill Temp All",
-    "description": "Select the options and click the button to delete temporary files.",
-    "d_drive": "Drive D",
-    "d_ame": "_AME Folders",
-    "d_extensions": ".mpgindex, .ims, .cfa, .pek file extensions",
-    "c_drive": "Drive C",
-    "c_ame": "_AME Folders",
-    "c_extensions": ".mpgindex, .ims, .cfa, .pek file extensions",
+    "description": "Select the folders and click the button to delete temporary files.",
+    "d_drive": "Drive D folders",
+    "d_ame": "_AME folders on D",
+    "d_extensions": "Temporary media files on D (.mpgindex, .ims, .cfa, .pek)",
+    "c_drive": "Drive C folders",
+    "c_ame": "_AME folders on C",
+    "c_extensions": "Temporary media files on C (.mpgindex, .ims, .cfa, .pek)",
     "e_drive": "Entire Drive E",
     "adobe_cache": "C:/Users/{username}/AppData/Roaming/Adobe/common/Media Cache Files",
     "delete_files": "Delete Files",
@@ -16,5 +16,7 @@
     "files_deleted": "Files deleted: {count}",
     "searching_in": "Searching in: {path}",
     "operation_completed": "Operation completed",
-    "save_settings": "Save Settings"
+    "save_settings": "Save Settings",
+    "no_tasks_selected": "No folders were selected. Please select at least one to proceed.",
+    "files_deleted_success": "Files deleted successfully!"
 }

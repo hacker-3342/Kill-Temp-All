@@ -1,0 +1,55 @@
+QWidget {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+QPushButton {
+    background-color: #333333;
+    color: #e0e0e0;
+    border: 1px solid #555555;
+    padding: 5px;
+}
+QPushButton:hover {
+    background-color: #444444;
+}
+QProgressBar {
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #333;
+}
+QProgressBar::chunk {
+    background-color: #43a047;
+    width: 10px;
+}
+QToolBar {
+    background-color: #1f1f1f;
+    spacing: 10px;
+}
+QComboBox {
+    background-color: #333;
+    color: #e0e0e0;
+    padding: 3px;
+}
+QCheckBox {
+    background-color: transparent;
+    color: #e0e0e0;
+    padding: 3px;
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 15px;
+    height: 15px;
+    border: 1px solid #555;
+    border-radius: 3px;
+    background-color: #333;
+}
+QCheckBox::indicator:checked {
+    border: 1px solid #555;
+    image: url(checkmark.svg);
+}
+QCheckBox::indicator:unchecked {
+    background-color: #333;
+    border: 1px solid #555;
+}
+QCheckBox::indicator:hover {
+    border: 1px solid #888;
+}
