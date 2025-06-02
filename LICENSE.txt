@@ -1,0 +1,12 @@
+Copyright (c) 2025 Héctor Urueña
+
+This software is proprietary and closed-source. You are granted permission to use the executable version of this software for personal, non-commercial purposes only.
+
+You may not:
+- Redistribute the code or reverse-engineer it.
+- Modify or create derivative works.
+- Use it for commercial purposes.
+
+Attribution is required in any public use or presentation of the software.
+
+All rights reserved.
