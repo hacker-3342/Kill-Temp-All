@@ -17,7 +17,7 @@ QProgressBar {
     background-color: #f0f0f0;
 }
 QProgressBar::chunk {
-    background-color: #0078d4;
+    background-color: #43a047;
     width: 10px;
 }
 QToolBar {

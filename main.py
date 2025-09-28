@@ -7,8 +7,19 @@ import shutil
 import glob
 
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout,
-    QHBoxLayout, QToolBar, QComboBox, QCheckBox, QProgressBar, QFrame, QMessageBox
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QLabel,
+    QPushButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QToolBar,
+    QComboBox,
+    QCheckBox,
+    QProgressBar,
+    QFrame,
+    QMessageBox,
 )
 from PyQt6.QtCore import Qt, QMetaObject, Q_ARG, pyqtSlot
 
@@ -20,7 +31,7 @@ class TempFileDeleter(QMainWindow):
 
         self.username = os.environ.get("USERNAME") or os.environ.get("USER")
         self.config = configparser.ConfigParser()
-        self.config_file = os.path.join(os.path.dirname(__file__), 'settings.ini')
+        self.config_file = os.path.join(os.path.dirname(__file__), "settings.ini")
         self.load_language()
 
         self.central_widget = QWidget()
@@ -36,11 +47,13 @@ class TempFileDeleter(QMainWindow):
 
     def load_language(self):
         self.config.read(self.config_file)
-        language = self.config.get('Settings', 'language', fallback='english')
-        theme = self.config.get('Settings', 'theme', fallback='dark')
+        language = self.config.get("Settings", "language", fallback="english")
+        theme = self.config.get("Settings", "theme", fallback="dark")
         self.theme = theme
-        language_file = os.path.join(os.path.dirname(__file__), 'Languages', f'{language}.json')
-        with open(language_file, 'r', encoding='utf-8') as f:
+        language_file = os.path.join(
+            os.path.dirname(__file__), "Languages", f"{language}.json"
+        )
+        with open(language_file, "r", encoding="utf-8") as f:
             self.lang = json.load(f)
 
     def create_toolbar(self):
@@ -48,10 +61,15 @@ class TempFileDeleter(QMainWindow):
         self.addToolBar(toolbar)
 
         self.language_combo = QComboBox()
-        languages_dir = os.path.join(os.path.dirname(__file__), 'Languages')
-        languages = [os.path.basename(f).split('.')[0] for f in glob.glob(os.path.join(languages_dir, '*.json'))]
+        languages_dir = os.path.join(os.path.dirname(__file__), "Languages")
+        languages = [
+            os.path.basename(f).split(".")[0]
+            for f in glob.glob(os.path.join(languages_dir, "*.json"))
+        ]
         self.language_combo.addItems(languages)
-        self.language_combo.setCurrentText(self.config.get('Settings', 'language', fallback='english'))
+        self.language_combo.setCurrentText(
+            self.config.get("Settings", "language", fallback="english")
+        )
         self.language_combo.currentIndexChanged.connect(self.change_language)
         toolbar.addWidget(self.language_combo)
 
@@ -79,12 +97,14 @@ class TempFileDeleter(QMainWindow):
         self.checkboxes = {}
         drive_sections = {
             "d_drive": ["d_ame", "d_extensions"],
-            "c_drive": ["c_ame", "c_extensions"]
+            "c_drive": ["c_ame", "c_extensions"],
         }
 
         for drive, children in drive_sections.items():
             section_label = QLabel(self.lang.get(drive, drive))
-            section_label.setStyleSheet("font-size: 16px; font-weight: bold; margin-top: 10px;")
+            section_label.setStyleSheet(
+                "font-size: 16px; font-weight: bold; margin-top: 10px;"
+            )
             self.layout.addWidget(section_label)
 
             for key in children:
@@ -94,7 +114,9 @@ class TempFileDeleter(QMainWindow):
                 self.layout.addWidget(cb)
 
         # Adobe cache as a special item
-        label = self.lang.get("adobe_cache", "Adobe Cache").replace("{username}", self.username)
+        label = self.lang.get("adobe_cache", "Adobe Cache").replace(
+            "{username}", self.username
+        )
         cb = QCheckBox(label)
         self.checkboxes["adobe_cache"] = cb
         self.layout.addWidget(cb)
@@ -105,7 +127,9 @@ class TempFileDeleter(QMainWindow):
         btn_layout.addWidget(self.delete_btn)
 
         self.delete_shutdown_btn = QPushButton(self.lang["delete_files_shutdown"])
-        self.delete_shutdown_btn.clicked.connect(lambda: self.start_deletion(shutdown=True))
+        self.delete_shutdown_btn.clicked.connect(
+            lambda: self.start_deletion(shutdown=True)
+        )
         btn_layout.addWidget(self.delete_shutdown_btn)
         self.layout.addLayout(btn_layout)
 
@@ -121,38 +145,48 @@ class TempFileDeleter(QMainWindow):
         self.layout.addWidget(self.status_label)
 
     def change_language(self):
-        self.config['Settings'] = {'language': self.language_combo.currentText()}
-        with open(self.config_file, 'w') as configfile:
+        self.config["Settings"] = {"language": self.language_combo.currentText()}
+        with open(self.config_file, "w") as configfile:
             self.config.write(configfile)
-        QMessageBox.information(self, "Language", "Language changed! Please restart the app to apply.")
+        QMessageBox.information(
+            self, "Language", "Language changed! Please restart the app to apply."
+        )
 
     def change_theme(self):
         self.theme = self.theme_combo.currentText()
         self.apply_theme()
 
     def apply_theme(self):
-        theme_file = os.path.join(os.path.dirname(__file__), "styles", f"{self.theme}_theme.qss")
+        theme_file = os.path.join(
+            os.path.dirname(__file__), "styles", f"{self.theme}_theme.qss"
+        )
         with open(theme_file, "r", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def save_settings(self):
-        self.config['Settings'] = {
-            'language': self.language_combo.currentText(),
-            'theme': self.theme_combo.currentText()
+        self.config["Settings"] = {
+            "language": self.language_combo.currentText(),
+            "theme": self.theme_combo.currentText(),
         }
-        with open(self.config_file, 'w') as configfile:
+        with open(self.config_file, "w") as configfile:
             self.config.write(configfile)
         QMessageBox.information(self, "Settings", "Settings saved!")
 
     def start_deletion(self, shutdown=False):
         self.progress_bar.setValue(0)
-        threading.Thread(target=self.delete_files, args=(shutdown,), daemon=True).start()
+        threading.Thread(
+            target=self.delete_files, args=(shutdown,), daemon=True
+        ).start()
 
     def delete_files(self, shutdown=False):
-        selected_tasks = [key for key, checkbox in self.checkboxes.items() if checkbox.isChecked()]
+        selected_tasks = [
+            key for key, checkbox in self.checkboxes.items() if checkbox.isChecked()
+        ]
 
         if not selected_tasks:
-            QMetaObject.invokeMethod(self, "show_no_tasks_popup", Qt.ConnectionType.QueuedConnection)
+            QMetaObject.invokeMethod(
+                self, "show_no_tasks_popup", Qt.ConnectionType.QueuedConnection
+            )
             return
 
         progress_increment = 100 // len(selected_tasks)
@@ -161,10 +195,25 @@ class TempFileDeleter(QMainWindow):
         for task in selected_tasks:
             self.simulate_task(task)
             current_progress += progress_increment
-            QMetaObject.invokeMethod(self.progress_bar, "setValue", Qt.ConnectionType.QueuedConnection, Q_ARG(int, current_progress))
+            QMetaObject.invokeMethod(
+                self.progress_bar,
+                "setValue",
+                Qt.ConnectionType.QueuedConnection,
+                Q_ARG(int, current_progress),
+            )
 
-        QMetaObject.invokeMethod(self.progress_bar, "setValue", Qt.ConnectionType.QueuedConnection, Q_ARG(int, 100))
-        QMetaObject.invokeMethod(self.status_label, "setText", Qt.ConnectionType.QueuedConnection, Q_ARG(str, self.lang.get("operation_completed", "Operation completed.")))
+        QMetaObject.invokeMethod(
+            self.progress_bar,
+            "setValue",
+            Qt.ConnectionType.QueuedConnection,
+            Q_ARG(int, 100),
+        )
+        QMetaObject.invokeMethod(
+            self.status_label,
+            "setText",
+            Qt.ConnectionType.QueuedConnection,
+            Q_ARG(str, self.lang.get("operation_completed", "Operation completed.")),
+        )
         QMetaObject.invokeMethod(self, "show_popup", Qt.ConnectionType.QueuedConnection)
 
         if shutdown:
@@ -176,7 +225,10 @@ class TempFileDeleter(QMainWindow):
             "d_extensions": ("D:/", [".mpgindex", ".ims", ".cfa", ".pek"]),
             "c_ame": ("C:/", "_AME"),
             "c_extensions": ("C:/", [".mpgindex", ".ims", ".cfa", ".pek"]),
-            "adobe_cache": (f"C:/Users/{self.username}/AppData/Roaming/Adobe/common/Media Cache Files", None),
+            "adobe_cache": (
+                f"C:/Users/{self.username}/AppData/Roaming/Adobe/common/Media Cache Files",
+                None,
+            ),
         }
 
         if task not in paths:
@@ -219,11 +271,22 @@ class TempFileDeleter(QMainWindow):
 
     @pyqtSlot()
     def show_no_tasks_popup(self):
-        QMessageBox.warning(self, self.lang.get("advisory", "Warning"), self.lang.get("no_tasks_selected", "No tasks were selected. Please select at least one task to proceed."))
+        QMessageBox.warning(
+            self,
+            self.lang.get("advisory", "Warning"),
+            self.lang.get(
+                "no_tasks_selected",
+                "No tasks were selected. Please select at least one task to proceed.",
+            ),
+        )
 
     @pyqtSlot()
     def show_popup(self):
-        QMessageBox.information(self, self.lang.get("operation_completed", "Operation completed"), self.lang.get("files_deleted_success", "Files deleted successfully!"))
+        QMessageBox.information(
+            self,
+            self.lang.get("operation_completed", "Operation completed"),
+            self.lang.get("files_deleted_success", "Files deleted successfully!"),
+        )
 
 
 if __name__ == "__main__":
