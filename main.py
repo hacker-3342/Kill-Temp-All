@@ -22,10 +22,7 @@ from PyQt6.QtWidgets import (
     QProgressBar,
     QFrame,
     QMessageBox,
-<<<<<<< Updated upstream
-=======
-    QTabWidget,
->>>>>>> Stashed changes
+    QTabWidget
 )
 from PyQt6.QtCore import Qt, QMetaObject, Q_ARG, pyqtSlot
 
@@ -104,7 +101,6 @@ class TempFileDeleter(QMainWindow):
         desc = QLabel(self.lang.get("description", "Remove temporary files."))
         desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
         desc.setStyleSheet("font-size: 12px; color: gray;")
-<<<<<<< Updated upstream
         self.layout.addWidget(desc)
 
         self.checkboxes = {}
@@ -133,26 +129,16 @@ class TempFileDeleter(QMainWindow):
         cb = QCheckBox(label)
         self.checkboxes["adobe_cache"] = cb
         self.layout.addWidget(cb)
-=======
-        main_layout.addWidget(desc)
->>>>>>> Stashed changes
 
         btn_layout = QHBoxLayout()
         self.delete_btn = QPushButton(self.lang.get("delete_files", "Delete Files"))
         self.delete_btn.clicked.connect(lambda: self.start_deletion(shutdown=False))
         btn_layout.addWidget(self.delete_btn)
 
-<<<<<<< Updated upstream
         self.delete_shutdown_btn = QPushButton(self.lang["delete_files_shutdown"])
         self.delete_shutdown_btn.clicked.connect(
             lambda: self.start_deletion(shutdown=True)
         )
-=======
-        self.delete_shutdown_btn = QPushButton(
-            self.lang.get("delete_files_shutdown", "Delete and Shutdown")
-        )
-        self.delete_shutdown_btn.clicked.connect(lambda: self.start_deletion(shutdown=True))
->>>>>>> Stashed changes
         btn_layout.addWidget(self.delete_shutdown_btn)
         main_layout.addLayout(btn_layout)
 
@@ -230,14 +216,8 @@ class TempFileDeleter(QMainWindow):
         theme_file = os.path.join(
             os.path.dirname(__file__), "styles", f"{self.theme}_theme.qss"
         )
-<<<<<<< Updated upstream
         with open(theme_file, "r", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
-=======
-        if os.path.exists(theme_file):
-            with open(theme_file, "r", encoding="utf-8") as f:
-                self.setStyleSheet(f.read())
->>>>>>> Stashed changes
 
     def save_settings(self):
         self.config["Settings"] = {
@@ -292,18 +272,8 @@ class TempFileDeleter(QMainWindow):
         ).start()
 
     def delete_files(self, shutdown=False):
-<<<<<<< Updated upstream
         selected_tasks = [
             key for key, checkbox in self.checkboxes.items() if checkbox.isChecked()
-=======
-        # Reset counters at the start of deletion
-        self.files_deleted = 0
-        self.folders_deleted = 0
-        self.space_cleared = 0
-
-        selected_tasks = [
-            key for key, checkbox in self.adv_checkboxes.items() if checkbox.isChecked()
->>>>>>> Stashed changes
         ]
 
         if not selected_tasks:
@@ -355,7 +325,6 @@ class TempFileDeleter(QMainWindow):
         """Helper method to get the full path for a task"""
         user_root = os.path.join("C:\\Users", self.username)
         paths = {
-<<<<<<< Updated upstream
             "d_ame": ("D:/", "_AME"),
             "d_extensions": ("D:/", [".mpgindex", ".ims", ".cfa", ".pek"]),
             "c_ame": ("C:/", "_AME"),
@@ -364,24 +333,6 @@ class TempFileDeleter(QMainWindow):
                 f"C:/Users/{self.username}/AppData/Roaming/Adobe/common/Media Cache Files",
                 None,
             ),
-=======
-            "temp": os.path.join(user_root, "AppData", "Local", "Temp"),
-            "after_effects": os.path.join(user_root, "AppData", "Local", "Temp", "Adobe", "After Effects"),
-            "media_cache": os.path.join(user_root, "AppData", "Roaming", "Adobe", "Common", "Media Cache Files"),
-        }
-        return paths.get(task, "Unknown path")
-
-    def simulate_task(self, task):
-        user_root = os.path.join("C:\\Users", self.username)
-        base_temp = os.path.join(user_root, "AppData", "Local", "Temp")
-        after_effects_root = os.path.join(base_temp, "Adobe", "After Effects")
-        media_cache = os.path.join(user_root, "AppData", "Roaming", "Adobe", "Common", "Media Cache Files")
-
-        paths = {
-            "temp": base_temp,
-            "after_effects": after_effects_root,
-            "media_cache": media_cache,
->>>>>>> Stashed changes
         }
 
         if task not in paths:
@@ -431,34 +382,10 @@ class TempFileDeleter(QMainWindow):
 
     @pyqtSlot()
     def show_popup(self):
-<<<<<<< Updated upstream
         QMessageBox.information(
             self,
             self.lang.get("operation_completed", "Operation completed"),
             self.lang.get("files_deleted_success", "Files deleted successfully!"),
-=======
-        # Convert bytes to human readable format
-        def convert_size(size_bytes):
-            if size_bytes == 0:
-                return "0 B"
-            size_name = ("B", "KB", "MB", "GB", "TB")
-            i = int(math.log(size_bytes, 1024))
-            p = math.pow(1024, i)
-            s = round(size_bytes / p, 2)
-            return f"{s} {size_name[i]}"
-
-        stats_message = (
-            f"{self.lang.get('files_deleted_success')}\n\n"
-            f"{self.lang.get('files_deleted', 'Files deleted: {count}').format(count=self.files_deleted)}\n"
-            f"{self.lang.get('folders_deleted', 'Folders deleted: {count}').format(count=self.folders_deleted)}\n"
-            f"{self.lang.get('space_cleared', 'Space cleared: {size}').format(size=convert_size(self.space_cleared))}"
-        )
-        
-        QMessageBox.information(
-            self,
-            self.lang.get("operation_completed", "Operation completed"),
-            stats_message
->>>>>>> Stashed changes
         )
 
 
