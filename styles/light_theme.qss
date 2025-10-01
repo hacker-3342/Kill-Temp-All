@@ -3,13 +3,14 @@ QWidget {
     color: #000000;
 }
 QPushButton {
-    background-color: #f0f0f0;
-    color: #000000;
     border: 1px solid #cccccc;
+    background-color: #f8f8f8;
+    color: #202020;
     padding: 5px;
 }
 QPushButton:hover {
-    background-color: #e0e0e0;
+    background-color: #e8e8e8;
+    border: 1px solid #bbbbbb;
 }
 QProgressBar {
     border: 1px solid #cccccc;
@@ -21,8 +22,9 @@ QProgressBar::chunk {
     width: 10px;
 }
 QToolBar {
-    background-color: #f8f8f8;
+    background-color: #f0f0f0;
     spacing: 10px;
+    border-bottom: 1px solid #cccccc;
 }
 QComboBox {
     background-color: #f0f0f0;
@@ -52,4 +54,39 @@ QCheckBox::indicator:unchecked {
 }
 QCheckBox::indicator:hover {
     border: 1px solid #aaaaaa;
+}
+
+/* Add tab styling */
+QTabWidget::pane {
+    border: 1px solid #cccccc;
+    background-color: #ffffff;
+}
+
+QTabBar::tab {
+    background-color: #f0f0f0;
+    color: #505050;
+    border: 1px solid #cccccc;
+    border-bottom: none;
+    padding: 5px 10px;
+    margin-right: 2px;
+}
+
+QTabBar::tab:selected {
+    background-color: #ffffff;
+    border-bottom: 1px solid #ffffff;
+    color: #000000;
+}
+
+QTabBar::tab:!selected {
+    margin-top: 2px;
+}
+
+/* Improve label contrast */
+QLabel {
+    color: #202020;
+}
+
+/* Make description text more readable */
+QLabel[description="true"] {
+    color: #505050;
 }
