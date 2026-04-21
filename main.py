@@ -25,12 +25,18 @@ from PyQt6.QtWidgets import (
     QTabWidget
 )
 from PyQt6.QtCore import Qt, QMetaObject, Q_ARG, pyqtSlot
+from PyQt6.QtGui import QIcon
 
 class TempFileDeleter(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Temp File Deleter")
         self.resize(700, 350)
+
+        # Set window icon
+        icon_path = os.path.join(os.path.dirname(__file__), "logo.ico")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
 
         self.username = os.environ.get("USERNAME") or os.environ.get("USER")
         self.config = configparser.ConfigParser()
