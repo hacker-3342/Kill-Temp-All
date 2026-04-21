@@ -295,7 +295,35 @@ class TempFileDeleter(QMainWindow):
                 Q_ARG(str, self.lang.get("searching_in", "Searching in: {path}").format(path=path)),
             )
             
-            self.simulate_task(task)
+            if not path or not os.path.exists(path):
+                continue
+            filter_func = self.get_filter(task)
+            # Process all files and folders in reverse order (bottom-up)
+            for root, subdirs, files in os.walk(path, topdown=False):
+                # First handle files in current directory
+                for name in files:
+                    if filter_func(name, False):
+                        try:
+                            file_path = os.path.join(root, name)
+                            # Get file size before deletion
+                            try:
+                                self.space_cleared += os.path.getsize(file_path)
+                                os.remove(file_path)
+                                self.files_deleted += 1
+                            except FileNotFoundError:
+                                pass
+                        except (PermissionError, OSError):
+                            pass
+                # Then handle subdirectories
+                for name in subdirs:
+                    if filter_func(name, True):
+                        try:
+                            full_subdir = os.path.join(root, name)
+                            # No need to calculate folder size as we already counted its files
+                            shutil.rmtree(full_subdir, ignore_errors=True)
+                            self.folders_deleted += 1
+                        except (PermissionError, OSError):
+                            pass
             current_progress += progress_increment
             QMetaObject.invokeMethod(
                 self.progress_bar,
@@ -322,52 +350,29 @@ class TempFileDeleter(QMainWindow):
             os.system("shutdown /s /t 0")
 
     def get_path_for_task(self, task):
-        """Helper method to get the full path for a task"""
-        user_root = os.path.join("C:\\Users", self.username)
+        """Helper method to get the root path for a task"""
         paths = {
-            "d_ame": ("D:/", "_AME"),
-            "d_extensions": ("D:/", [".mpgindex", ".ims", ".cfa", ".pek"]),
-            "c_ame": ("C:/", "_AME"),
-            "c_extensions": ("C:/", [".mpgindex", ".ims", ".cfa", ".pek"]),
-            "adobe_cache": (
-                f"C:/Users/{self.username}/AppData/Roaming/Adobe/common/Media Cache Files",
-                None,
-            ),
+            "d_ame": "D:/",
+            "d_extensions": "D:/",
+            "c_ame": "C:/",
+            "c_extensions": "C:/",
+            "adobe_cache": f"C:/Users/{self.username}/AppData/Roaming/Adobe/common/Media Cache Files",
         }
+        return paths.get(task)
 
-        if task not in paths:
-            return
-
-        path = paths[task]
-
-        if not os.path.exists(path):
-            return
-
-        # Process all files and folders in reverse order (bottom-up)
-        for root, subdirs, files in os.walk(path, topdown=False):
-            # First handle files in current directory
-            for name in files:
-                try:
-                    file_path = os.path.join(root, name)
-                    # Get file size before deletion
-                    try:
-                        self.space_cleared += os.path.getsize(file_path)
-                        os.remove(file_path)
-                        self.files_deleted += 1
-                    except FileNotFoundError:
-                        pass
-                except (PermissionError, OSError):
-                    pass
-
-            # Then handle subdirectories
-            for name in subdirs:
-                try:
-                    full_subdir = os.path.join(root, name)
-                    # No need to calculate folder size as we already counted its files
-                    shutil.rmtree(full_subdir, ignore_errors=True)
-                    self.folders_deleted += 1
-                except (PermissionError, OSError):
-                    pass
+    def get_filter(self, task):
+        """Get the filter function for what to delete in the task"""
+        if task == "adobe_cache":
+            return lambda name, is_dir: True
+        elif task in ["d_ame", "c_ame"]:
+            return lambda name, is_dir: "_AME" in name
+        elif task == "d_extensions":
+            exts = [".mpgindex", ".ims", ".cfa", ".pek"]
+            return lambda name, is_dir: not is_dir and any(name.endswith(ext) for ext in exts)
+        elif task == "c_extensions":
+            exts = [".mpgindex", ".ims", ".cfa", ".pek"]
+            return lambda name, is_dir: not is_dir and any(name.endswith(ext) for ext in exts)
+        return lambda name, is_dir: False
 
     @pyqtSlot()
     def show_no_tasks_popup(self):
