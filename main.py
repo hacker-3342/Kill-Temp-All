@@ -223,7 +223,14 @@ class TempFileDeleter(QMainWindow):
             os.path.dirname(__file__), "styles", f"{self.theme}_theme.qss"
         )
         with open(theme_file, "r", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+            stylesheet = f.read()
+        
+        # Replace relative checkmark path with absolute path
+        checkmark_path = os.path.join(os.path.dirname(__file__), "checkmark.svg")
+        checkmark_path = checkmark_path.replace("\\", "/")  # Convert backslashes to forward slashes for URL
+        stylesheet = stylesheet.replace("url(checkmark.svg)", f"url({checkmark_path})")
+        
+        self.setStyleSheet(stylesheet)
 
     def save_settings(self):
         self.config["Settings"] = {
